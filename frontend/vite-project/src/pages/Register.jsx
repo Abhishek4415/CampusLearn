@@ -2,40 +2,44 @@ import { useState } from 'react'
 import API from '../services/api'
 import { useNavigate } from 'react-router-dom'
 
+function Register() {
 
-function Login() {
-  const navigate = useNavigate()
-
-
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [role, setRole] = useState('student')
   const [message, setMessage] = useState('')
 
-const handleLogin = async () => {
-  try {
-    const res = await API.post('/api/auth/login', {
-      email,
-      password
-    })
-
-    localStorage.setItem('token', res.data.token)
-    localStorage.setItem('user', JSON.stringify(res.data.user))
-
-    setMessage('Login successful')
-    navigate('/dashboard')
-  } catch (error) {
-    setMessage('Login failed')
+  const handleRegister = async () => {
+    try {
+      await API.post('/api/auth/register', {
+        name,
+        email,
+        password,
+        role
+      })
+      setMessage('Registration successful')
+      navigate('/login')  
+    } catch (error) {
+      setMessage('Registration failed')
+    }
   }
-}
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-6 rounded shadow-md w-80">
 
         <h2 className="text-2xl font-bold text-center mb-4">
-          Login
+          Register
         </h2>
+
+        <input
+          type="text"
+          placeholder="Name"
+          className="w-full mb-3 p-2 border rounded"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
 
         <input
           type="email"
@@ -48,16 +52,25 @@ const handleLogin = async () => {
         <input
           type="password"
           placeholder="Password"
-          className="w-full mb-4 p-2 border rounded"
+          className="w-full mb-3 p-2 border rounded"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
+        <select
+          className="w-full mb-4 p-2 border rounded"
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+        >
+          <option value="student">Student</option>
+          <option value="teacher">Teacher</option>
+        </select>
+
         <button
-          onClick={handleLogin}
+          onClick={handleRegister}
           className="w-full bg-blue-600 text-white p-2 rounded"
         >
-          Login
+          Register
         </button>
 
         {message && (
@@ -71,27 +84,4 @@ const handleLogin = async () => {
   )
 }
 
-export default Login
-
-
-// How this works (very simple)
-
-// User types email and password
-
-// Values are saved in React state
-
-// User clicks Login button
-
-// Data is sent to backend
-
-// Backend checks user
-
-// Response comes back
-
-// Message is shown
-
-//flow chart
-
-// User → React → Axios → Express → MongoDB
-//                               ↓
-// User ← React ← Axios ← Express ← MongoDB
+export default Register
