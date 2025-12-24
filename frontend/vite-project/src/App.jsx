@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard'
 import UploadNotes from './pages/UploadNotes'
 import TeacherRoute from './components/TeacherRoute'
 import ManageNotes from './pages/ManageNotes'
+import StudentNotes from './pages/StudentNotes'
 
 
 
@@ -18,7 +19,10 @@ function App() {
       <Routes>
 
         {/* Public routes */}
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={
+            <Home />
+
+        } />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
@@ -48,7 +52,14 @@ function App() {
           }
         />
 
-
+        <Route
+          path="/notes"
+          element={
+            <ProtectedRoute>
+              <StudentNotes/>
+            </ProtectedRoute>
+          }
+        />
 
       </Routes>
     </>

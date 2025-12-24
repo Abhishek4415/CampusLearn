@@ -29,7 +29,7 @@ function Dashboard() {
       color: 'from-green-500 to-emerald-600',
       bgColor: 'bg-green-50',
       textColor: 'text-green-700',
-      action: () => navigate('/notes') // Assuming there's a notes page for students
+      action: () => navigate('/notes')
     },
     {
       icon: Bot,

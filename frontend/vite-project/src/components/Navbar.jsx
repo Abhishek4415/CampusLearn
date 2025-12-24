@@ -47,11 +47,10 @@ function Navbar() {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                      isActive(item.path)
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${isActive(item.path)
                         ? 'bg-blue-50 text-blue-700 shadow-sm'
                         : 'text-gray-700 hover:bg-gray-50 hover:text-blue-600'
-                    }`}
+                      }`}
                   >
                     <item.icon className="h-4 w-4" />
                     <span>{item.label}</span>
@@ -60,7 +59,14 @@ function Navbar() {
               }
               return null
             })}
+            {token && user?.role === 'student' && (
+              <Link to="/notes" 
+              className={'flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 text-gray-700 hover:bg-gray-50 hover:text-blue-600' }
+              >View Notes</Link>
+            )}
           </div>
+
+
 
           {/* User Actions */}
           <div className="hidden md:flex items-center space-x-4">
@@ -121,11 +127,10 @@ function Navbar() {
                       key={item.path}
                       to={item.path}
                       onClick={() => setIsMenuOpen(false)}
-                      className={`flex items-center space-x-3 px-3 py-3 rounded-lg font-medium transition-all duration-200 ${
-                        isActive(item.path)
+                      className={`flex items-center space-x-3 px-3 py-3 rounded-lg font-medium transition-all duration-200 ${isActive(item.path)
                           ? 'bg-blue-50 text-blue-700'
                           : 'text-gray-700 hover:bg-gray-50 hover:text-blue-600'
-                      }`}
+                        }`}
                     >
                       <item.icon className="h-5 w-5" />
                       <span>{item.label}</span>

@@ -7,6 +7,8 @@ function UploadNotes() {
   const navigate = useNavigate();
   const [title, setTitle] = useState('')
   const [subject, setSubject] = useState('')
+  const [school, setSchool] = useState('')
+  const [batch, setBatch] = useState('')
   const [file, setFile] = useState(null)
   const [message, setMessage] = useState('')
   const [isUploading, setIsUploading] = useState(false)
@@ -20,7 +22,7 @@ function UploadNotes() {
       return
     }
 
-    if (!title.trim() || !subject.trim()) {
+    if (!title.trim() || !subject.trim() || !school.trim() || !batch.trim()) {
       setMessage('Please fill in all fields')
       return
     }
@@ -31,6 +33,8 @@ function UploadNotes() {
     const formData = new FormData()
     formData.append('title', title.trim())
     formData.append('subject', subject.trim())
+    formData.append('school', school.trim())
+    formData.append('batch', batch.trim())
     formData.append('file', file)
 
     try {
@@ -44,6 +48,8 @@ function UploadNotes() {
       setMessage('Notes uploaded successfully!')
       setTitle('')
       setSubject('')
+      setSchool('')
+      setBatch('')
       setFile(null)
 
       // Redirect after a short delay to show success message
@@ -94,11 +100,37 @@ function UploadNotes() {
     setFile(null)
   }
 
-  const subjects = [
-    'Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science',
-    'English', 'History', 'Geography', 'Economics', 'Business Studies',
-    'Accounting', 'Psychology', 'Sociology', 'Political Science', 'Other'
-  ]
+const subjects = [
+  'Engineering Mathematics',
+  'Discrete Mathematics',
+  'Probability and Statistics',
+
+  'Programming Fundamentals',
+  'Data Structures and Algorithms',
+  'Object Oriented Programming',
+  'Operating Systems',
+  'Database Management Systems',
+  'Computer Networks',
+  'Software Engineering',
+
+  'Artificial Intelligence',
+  'Machine Learning',
+  'Deep Learning',
+  'Data Science',
+  'Natural Language Processing',
+  'Computer Vision',
+
+  'Web Development',
+  'Cloud Computing',
+  'Cyber Security',
+  'Blockchain',
+
+  'Compiler Design',
+  'Theory of Computation',
+
+  'Other'
+]
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
@@ -152,6 +184,40 @@ function UploadNotes() {
                   <option key={subj} value={subj}>{subj}</option>
                 ))}
               </select>
+            </div>
+
+            {/* School Name Input */}
+            <div className="mb-6">
+              <label htmlFor="school" className="block text-sm font-semibold text-gray-700 mb-2">
+                School Name *
+              </label>
+              <input
+                type="text"
+                id="school"
+                placeholder="e.g., SOET,SOMC"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
+                value={school}
+                onChange={(e) => setSchool(e.target.value)}
+                required
+                disabled={isUploading}
+              />
+            </div>
+
+            {/* Batch Input */}
+            <div className="mb-6">
+              <label htmlFor="batch" className="block text-sm font-semibold text-gray-700 mb-2">
+                Batch / Year *
+              </label>
+              <input
+                type="text"
+                id="batch"
+                placeholder="e.g., 2024-2025, B.Tech 3rd Year, Class 12"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
+                value={batch}
+                onChange={(e) => setBatch(e.target.value)}
+                required
+                disabled={isUploading}
+              />
             </div>
 
             {/* File Upload Area */}
@@ -234,9 +300,9 @@ function UploadNotes() {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isUploading || !file || !title.trim() || !subject.trim()}
+              disabled={isUploading || !file || !title.trim() || !subject.trim() || !school.trim() || !batch.trim()}
               className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-200 flex items-center justify-center ${
-                isUploading || !file || !title.trim() || !subject.trim()
+                isUploading || !file || !title.trim() || !subject.trim() || !school.trim() || !batch.trim()
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98]'
               }`}
