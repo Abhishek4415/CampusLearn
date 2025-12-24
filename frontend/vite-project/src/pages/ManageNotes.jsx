@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import API from '../services/api'
-import { Search, FileText, Eye, Edit, Trash2, BookOpen, Calendar, User, X, CheckCircle, AlertCircle } from 'lucide-react'
+import { Search, FileText, Eye, Edit, Trash2, BookOpen, User, X, CheckCircle, AlertCircle, GraduationCap } from 'lucide-react'
 
 function ManageNotes() {
   const [notes, setNotes] = useState([])
@@ -8,12 +8,15 @@ function ManageNotes() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedSubject, setSelectedSubject] = useState('')
-  const [showEditModal, setShowEditModal] = useState(false)
+  const [selectedSemester, setSelectedSemester] = useState('')
+  const [selectedBatch, setSelectedBatch] = useState('')
   const [editingNote, setEditingNote] = useState(null)
   const [editTitle, setEditTitle] = useState('')
   const [editSubject, setEditSubject] = useState('')
   const [editSchool, setEditSchool] = useState('')
   const [editBatch, setEditBatch] = useState('')
+  const [editSemester, setEditSemester] = useState('')
+  const [showEditModal, setShowEditModal] = useState(false)
   const [editMessage, setEditMessage] = useState('')
   const [isUpdating, setIsUpdating] = useState(false)
 
@@ -51,10 +54,22 @@ function ManageNotes() {
       filtered = filtered.filter(note => note.subject === selectedSubject)
     }
 
+    // Filter by semester
+    if (selectedSemester) {
+      filtered = filtered.filter(note => note.semester === parseInt(selectedSemester))
+    }
+
+    // Filter by batch
+    if (selectedBatch) {
+      filtered = filtered.filter(note => note.batch === selectedBatch)
+    }
+
     setFilteredNotes(filtered)
-  }, [searchTerm, selectedSubject, notes])
+  }, [searchTerm, selectedSubject, selectedSemester, selectedBatch, notes])
 
   const subjects = [...new Set(notes.map(note => note.subject))]
+  const semesters = [...new Set(notes.map(note => note.semester).filter(Boolean))]
+  const batches = [...new Set(notes.map(note => note.batch).filter(Boolean))]
 
   const handleDelete = async (noteId) => {
     if (window.confirm('Are you sure you want to delete this note?')) {
@@ -78,6 +93,7 @@ function ManageNotes() {
     setEditSubject(note.subject)
     setEditSchool(note.school || '')
     setEditBatch(note.batch || '')
+    setEditSemester(note.semester || '')
     setShowEditModal(true)
     setEditMessage('')
   }
@@ -85,7 +101,7 @@ function ManageNotes() {
   const handleUpdate = async (e) => {
     e.preventDefault()
 
-    if (!editTitle.trim() || !editSubject.trim() || !editSchool.trim() || !editBatch.trim()) {
+    if (!editTitle.trim() || !editSubject.trim() || !editSchool.trim() || !editBatch.trim() || !editSemester) {
       setEditMessage('Please fill in all fields')
       return
     }
@@ -98,7 +114,8 @@ function ManageNotes() {
         title: editTitle.trim(),
         subject: editSubject.trim(),
         school: editSchool.trim(),
-        batch: editBatch.trim()
+        batch: editBatch.trim(),
+        semester: parseInt(editSemester)
       }, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -133,8 +150,11 @@ function ManageNotes() {
     setEditSubject('')
     setEditSchool('')
     setEditBatch('')
+    setEditSemester('')
     setEditMessage('')
   }
+
+
 
   if (loading) {
     return (
@@ -187,6 +207,34 @@ function ManageNotes() {
                 ))}
               </select>
             </div>
+
+            {/* Semester Filter */}
+            <div className="md:w-48">
+              <select
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+                value={selectedSemester}
+                onChange={(e) => setSelectedSemester(e.target.value)}
+              >
+                <option value="">All Semesters</option>
+                {semesters.sort((a, b) => a - b).map(semester => (
+                  <option key={semester} value={semester}>Semester {semester}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Batch Filter */}
+            <div className="md:w-48">
+              <select
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+                value={selectedBatch}
+                onChange={(e) => setSelectedBatch(e.target.value)}
+              >
+                <option value="">All Batches</option>
+                {batches.sort().map(batch => (
+                  <option key={batch} value={batch}>{batch}</option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
@@ -218,69 +266,68 @@ function ManageNotes() {
             {filteredNotes.map(note => (
               <div
                 key={note._id}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden group"
+                className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden"
               >
                 {/* Card Header */}
                 <div className="p-6 border-b border-gray-100">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-1 line-clamp-2">
                         {note.title}
                       </h3>
                       <div className="flex items-center text-sm text-gray-600 mb-2">
                         <BookOpen className="h-4 w-4 mr-1" />
-                        <span className="font-medium">{note.subject}</span>
+                        <span>{note.subject}</span>
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600 mb-2">
+                        <GraduationCap className="h-4 w-4 mr-1" />
+                        <span>{note.batch} • Semester {note.semester}</span>
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <User className="h-4 w-4 mr-1" />
+                        <span>{note.school}</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Metadata */}
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <div className="flex items-center">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      <span>{new Date(note.createdAt || Date.now()).toLocaleDateString()}</span>
+                  {/* Action Buttons */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => window.open(`http://localhost:5000/${note.fileUrl}`, '_blank')}
+                        className="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200"
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        View
+                      </button>
+                      <button
+                        onClick={() => handleEdit(note)}
+                        className="inline-flex items-center px-3 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors duration-200"
+                      >
+                        <Edit className="h-4 w-4 mr-1" />
+                        Edit
+                      </button>
                     </div>
-                    <div className="flex items-center">
-                      <User className="h-3 w-3 mr-1" />
-                      <span>You</span>
-                    </div>
+                    <button
+                      onClick={() => handleDelete(note._id)}
+                      className="inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors duration-200"
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Delete
+                    </button>
                   </div>
                 </div>
 
-                {/* Card Actions */}
-                <div className="p-4 bg-gray-50 flex items-center justify-between">
-                  <a
-                    href={`http://localhost:5000/${note.fileUrl}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200"
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    View PDF
-                  </a>
-
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => handleEdit(note)}
-                      className="p-2 text-gray-400 hover:text-blue-600 transition-colors duration-200 rounded-lg hover:bg-blue-50"
-                      title="Edit note"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(note._id)}
-                      className="p-2 text-gray-400 hover:text-red-600 transition-colors duration-200 rounded-lg hover:bg-red-50"
-                      title="Delete note"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
+                {/* Card Footer */}
+                <div className="px-6 py-3 bg-gray-50 border-t border-gray-100">
+                  <p className="text-xs text-gray-500">
+                    Uploaded on {new Date(note.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
         )}
-
         {/* Stats Footer */}
         {filteredNotes.length > 0 && (
           <div className="mt-8 text-center text-sm text-gray-600">
@@ -359,21 +406,51 @@ function ManageNotes() {
                   />
                 </div>
 
-                {/* Batch Input */}
+                {/* Batch Selection */}
                 <div>
                   <label htmlFor="editBatch" className="block text-sm font-semibold text-gray-700 mb-2">
-                    Batch / Year *
+                    Passout Batch *
                   </label>
-                  <input
-                    type="text"
+                  <select
                     id="editBatch"
-                    placeholder="e.g., 2024-2025, B.Tech 3rd Year, Class 12"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-gray-900"
                     value={editBatch}
                     onChange={(e) => setEditBatch(e.target.value)}
                     required
                     disabled={isUpdating}
-                  />
+                  >
+                    <option value="">Select passout batch</option>
+                    <option value="2023 Passout">2023 Passout</option>
+                    <option value="2024 Passout">2024 Passout</option>
+                    <option value="2025 Passout">2025 Passout</option>
+                    <option value="2026 Passout">2026 Passout</option>
+                    <option value="2027 Passout">2027 Passout</option>
+                  </select>
+                </div>
+
+                {/* Semester Selection */}
+                <div>
+                  <label htmlFor="editSemester" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Semester *
+                  </label>
+                  <select
+                    id="editSemester"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-gray-900"
+                    value={editSemester}
+                    onChange={(e) => setEditSemester(e.target.value)}
+                    required
+                    disabled={isUpdating}
+                  >
+                    <option value="">Select semester</option>
+                    <option value="1">Semester 1</option>
+                    <option value="2">Semester 2</option>
+                    <option value="3">Semester 3</option>
+                    <option value="4">Semester 4</option>
+                    <option value="5">Semester 5</option>
+                    <option value="6">Semester 6</option>
+                    <option value="7">Semester 7</option>
+                    <option value="8">Semester 8</option>
+                  </select>
                 </div>
 
                 {/* Message Display */}
@@ -404,9 +481,9 @@ function ManageNotes() {
                   </button>
                   <button
                     type="submit"
-                    disabled={isUpdating || !editTitle.trim() || !editSubject.trim() || !editSchool.trim() || !editBatch.trim()}
+                    disabled={isUpdating || !editTitle.trim() || !editSubject.trim() || !editSchool.trim() || !editBatch.trim() || !editSemester}
                     className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center ${
-                      isUpdating || !editTitle.trim() || !editSubject.trim() || !editSchool.trim() || !editBatch.trim()
+                      isUpdating || !editTitle.trim() || !editSubject.trim() || !editSchool.trim() || !editBatch.trim() || !editSemester
                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98]'
                     }`}

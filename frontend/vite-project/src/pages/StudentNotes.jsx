@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import API from '../services/api'
-import { Search, FileText, Download, Filter, BookOpen, Calendar, User, Eye, Star, TrendingUp } from 'lucide-react'
+import { Search, FileText, Download,Calendar, Filter, BookOpen, User, Eye, Star, TrendingUp, GraduationCap, School } from 'lucide-react'
 
 function StudentNotes() {
   const [notes, setNotes] = useState([])
@@ -8,6 +8,8 @@ function StudentNotes() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedSubject, setSelectedSubject] = useState('')
+  const [selectedSemester, setSelectedSemester] = useState('')
+  const [selectedBatch, setSelectedBatch] = useState('')
   const [sortBy, setSortBy] = useState('recent')
   const [favorites, setFavorites] = useState([])
 
@@ -63,6 +65,16 @@ function StudentNotes() {
       filtered = filtered.filter(note => note.subject === selectedSubject)
     }
 
+    // Filter by semester
+    if (selectedSemester) {
+      filtered = filtered.filter(note => note.semester === parseInt(selectedSemester))
+    }
+
+    // Filter by batch
+    if (selectedBatch) {
+      filtered = filtered.filter(note => note.batch === selectedBatch)
+    }
+
     // Sort
     filtered = [...filtered].sort((a, b) => {
       switch (sortBy) {
@@ -80,9 +92,11 @@ function StudentNotes() {
     })
 
     setFilteredNotes(filtered)
-  }, [searchTerm, selectedSubject, sortBy, notes, favorites])
+  }, [searchTerm, selectedSubject, selectedSemester, selectedBatch, sortBy, notes, favorites])
 
   const subjects = [...new Set(notes.map(note => note.subject))]
+  const semesters = [...new Set(notes.map(note => note.semester).filter(Boolean))]
+  const batches = [...new Set(notes.map(note => note.batch).filter(Boolean))]
 
   const toggleFavorite = (noteId) => {
     const updated = favorites.includes(noteId)
@@ -100,6 +114,8 @@ function StudentNotes() {
     link.click()
     document.body.removeChild(link)
   }
+
+
 
   if (loading) {
     return (
@@ -190,6 +206,34 @@ function StudentNotes() {
                 <option value="">All Subjects</option>
                 {subjects.map(subject => (
                   <option key={subject} value={subject}>{subject}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Semester Filter */}
+            <div className="lg:w-48">
+              <select
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+                value={selectedSemester}
+                onChange={(e) => setSelectedSemester(e.target.value)}
+              >
+                <option value="">All Semesters</option>
+                {semesters.sort((a, b) => a - b).map(semester => (
+                  <option key={semester} value={semester}>Semester {semester}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Batch Filter */}
+            <div className="lg:w-48">
+              <select
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+                value={selectedBatch}
+                onChange={(e) => setSelectedBatch(e.target.value)}
+              >
+                <option value="">All Batches</option>
+                {batches.sort().map(batch => (
+                  <option key={batch} value={batch}>{batch}</option>
                 ))}
               </select>
             </div>

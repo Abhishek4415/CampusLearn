@@ -9,6 +9,7 @@ function UploadNotes() {
   const [subject, setSubject] = useState('')
   const [school, setSchool] = useState('')
   const [batch, setBatch] = useState('')
+  const [semester, setSemester] = useState('')
   const [file, setFile] = useState(null)
   const [message, setMessage] = useState('')
   const [isUploading, setIsUploading] = useState(false)
@@ -22,7 +23,7 @@ function UploadNotes() {
       return
     }
 
-    if (!title.trim() || !subject.trim() || !school.trim() || !batch.trim()) {
+    if (!title.trim() || !subject.trim() || !school.trim() || !batch.trim() || !semester) {
       setMessage('Please fill in all fields')
       return
     }
@@ -35,6 +36,7 @@ function UploadNotes() {
     formData.append('subject', subject.trim())
     formData.append('school', school.trim())
     formData.append('batch', batch.trim())
+    formData.append('semester', semester)
     formData.append('file', file)
 
     try {
@@ -50,6 +52,7 @@ function UploadNotes() {
       setSubject('')
       setSchool('')
       setBatch('')
+      setSemester('')
       setFile(null)
 
       // Redirect after a short delay to show success message
@@ -203,21 +206,51 @@ const subjects = [
               />
             </div>
 
-            {/* Batch Input */}
+            {/* Batch Selection */}
             <div className="mb-6">
               <label htmlFor="batch" className="block text-sm font-semibold text-gray-700 mb-2">
-                Batch / Year *
+                Passout Batch *
               </label>
-              <input
-                type="text"
+              <select
                 id="batch"
-                placeholder="e.g., 2024-2025, B.Tech 3rd Year, Class 12"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-gray-900"
                 value={batch}
                 onChange={(e) => setBatch(e.target.value)}
                 required
                 disabled={isUploading}
-              />
+              >
+                <option value="">Select passout batch</option>
+                <option value="2023 Passout">2023 Passout</option>
+                <option value="2024 Passout">2024 Passout</option>
+                <option value="2025 Passout">2025 Passout</option>
+                <option value="2026 Passout">2026 Passout</option>
+                <option value="2027 Passout">2027 Passout</option>
+              </select>
+            </div>
+
+            {/* Semester Selection */}
+            <div className="mb-6">
+              <label htmlFor="semester" className="block text-sm font-semibold text-gray-700 mb-2">
+                Semester *
+              </label>
+              <select
+                id="semester"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-gray-900"
+                value={semester}
+                onChange={(e) => setSemester(e.target.value)}
+                required
+                disabled={isUploading}
+              >
+                <option value="">Select semester</option>
+                <option value="1">Semester 1</option>
+                <option value="2">Semester 2</option>
+                <option value="3">Semester 3</option>
+                <option value="4">Semester 4</option>
+                <option value="5">Semester 5</option>
+                <option value="6">Semester 6</option>
+                <option value="7">Semester 7</option>
+                <option value="8">Semester 8</option>
+              </select>
             </div>
 
             {/* File Upload Area */}
@@ -300,9 +333,9 @@ const subjects = [
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isUploading || !file || !title.trim() || !subject.trim() || !school.trim() || !batch.trim()}
+              disabled={isUploading || !file || !title.trim() || !subject.trim() || !school.trim() || !batch.trim() || !semester}
               className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-200 flex items-center justify-center ${
-                isUploading || !file || !title.trim() || !subject.trim() || !school.trim() || !batch.trim()
+                isUploading || !file || !title.trim() || !subject.trim() || !school.trim() || !batch.trim() || !semester
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98]'
               }`}
