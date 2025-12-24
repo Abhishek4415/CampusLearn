@@ -11,6 +11,9 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import connectDB from './config/db.js'
 import authRoutes from './routes/authRoutes.js'
+import noteRoutes from './routes/noteRoutes.js'
+import path from 'path'
+
 
 
 
@@ -27,6 +30,8 @@ app.use(cors())
 // Allow the server to understand JSON data sent by frontend
 app.use(express.json())
 app.use('/api/auth', authRoutes)  //middlesware  //“All requests that start with /api/auth should be handled by authRoutes.”
+app.use('/api/notes', noteRoutes)  //middlewARE //upload note handle
+app.use('/uploads', express.static('uploads'))
 
 // Create a test route to check if server is running
 app.get('/', (req, res) => {
