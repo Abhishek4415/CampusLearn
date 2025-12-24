@@ -5,6 +5,11 @@ import Login from './pages/login'
 import Register from './pages/Register'
 import ProtectedRoute from './components/ProtectedRoute'
 import Dashboard from './pages/Dashboard'
+import UploadNotes from './pages/UploadNotes'
+import TeacherRoute from './components/TeacherRoute'
+import ManageNotes from './pages/ManageNotes'
+
+
 
 function App() {
   return (
@@ -26,6 +31,24 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/upload"
+          element={
+            <TeacherRoute>
+              <UploadNotes />
+            </TeacherRoute>
+          }
+        />
+        <Route
+          path="/managenotes"
+          element={
+            <TeacherRoute>
+              <ManageNotes/>
+            </TeacherRoute>
+          }
+        />
+
+
 
       </Routes>
     </>

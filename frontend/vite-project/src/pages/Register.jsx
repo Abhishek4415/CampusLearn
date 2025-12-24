@@ -9,6 +9,7 @@ function Register() {
   const [password, setPassword] = useState('')
   const [role, setRole] = useState('student')
   const [message, setMessage] = useState('')
+  const navigate = useNavigate()
 
   const handleRegister = async () => {
     try {
